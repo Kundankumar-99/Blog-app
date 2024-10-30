@@ -39,27 +39,27 @@ export class AuthService {
     }
   }
 
-  async currentUser(){
+  async currentUser() {
     try {
-        await this.account.get();
+      const user = await this.account.get();
+      return user; // Return user data if successful
     } catch (error) {
-        throw error;
-    }
-
-    return null;
-  }
-
-  async logout(){
-    try{
-        await this.account.deleteSessions();
-    }
-    catch(error){
-        throw error;
+      if (error.code === 401) {
+        console.log("User is not authenticated.");
+      } else {
+        console.log("Error in getting current user", error);
+      }
+      return null; // Return null if there’s an error
     }
   }
-
-
-
+  
+  async logout() {
+    try {
+      await this.account.deleteSessions();
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 const authService = new AuthService();

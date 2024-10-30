@@ -1,13 +1,42 @@
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import authService from "./appwrite/auth";
+import { login, logout } from "./store/authSlice";
+import { Header, Footer } from "./components";
+import { Outlet } from "react-router";
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
-  console.log(import.meta.env.REACT_APP_APPWRITE_URL)
+  useEffect(() => {
+    authService
+      .currentUser()
+      .then((userData) => {
+        if (userData) {
+          dispatch(login({ userData }));
+        } else {
+          dispatch(logout());
+        }
+      })
+      // .Catch Can be Used Here, I Have try it.
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-  return (
+  return !loading ? (
     <>
-      <h1 className="text-3xl font-bold underline"> Hello world! </h1>
+      <div>
+        <Header />
+        {/* <Main>
+          <Outlet />
+        </Main> */}
+
+        <Footer />
+      </div>
     </>
-  );
+  ) : null;
 }
 
 export default App;
